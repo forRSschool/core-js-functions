@@ -181,8 +181,17 @@ function retry(func, attempts) {
  * cos(3.141592653589793) ends
  *
  */
-function logger(/* func, logFunc */) {
-  throw new Error('Not implemented');
+function logger(func, logFunc) {
+  return (...args) => {
+    function getArgsString() {
+      const arr = args.map((e) => JSON.stringify(e));
+      return arr.reduce((prev, curr) => `${prev},${curr}`);
+    }
+    logFunc(`${func.name}(${getArgsString()}) starts`);
+    const result = func(...args);
+    logFunc(`${func.name}(${getArgsString()}) ends`);
+    return result;
+  };
 }
 
 /**
@@ -219,8 +228,13 @@ function partialUsingArguments(fn, ...args1) {
  *   getId4() => 7
  *   getId10() => 11
  */
-function getIdGeneratorFunction(/* startFrom */) {
-  throw new Error('Not implemented');
+function getIdGeneratorFunction(startFrom) {
+  let start = startFrom;
+  return () => {
+    const temp = start;
+    start += 1;
+    return temp;
+  };
 }
 
 module.exports = {
